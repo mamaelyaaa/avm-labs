@@ -1,8 +1,7 @@
-from math import ceil
 import numpy as np
 import matplotlib.pyplot as plt
 
-from deriviate import f
+from deriviate import f, df
 
 
 class Graphic:
@@ -15,52 +14,43 @@ class Graphic:
         ax = plt.gca()
         ax.plot(self.x, self.y)
 
+        # Рисуем декартову систему
         plt.axhline(0, color="black", linewidth=0.5)
         plt.axvline(0, color="black", linewidth=0.5)
+        ax.grid()
 
         ax.set_title('График функции y(x)')
         ax.set_xlabel('x')
         ax.set_ylabel('y')
-        ax.grid()
         plt.savefig("pics/y(x).png")
+        plt.show()
         return
 
-    def find_closest_x0(self, visible: int) -> list[int]:
-        x = [ceil(i) for i in self.x]
-        y = [f(i) for i in self.x]
+    @staticmethod
+    def intervalCheck(a: int, b: int) -> bool:
+        """Проверяем есть ли на интервале [a, b] корень уравнения"""
+        accuracy = 0.1
 
-        nums = sorted(zip(x, y), key=lambda coord: abs(coord[1]))
-        hmap = {}
-        for x, y in nums:
-            hmap[x] = hmap.get(x, 0) + 1
+        if f(a) * f(b) < 0 or all(df(i, accuracy) > accuracy for i in range(a, b + 1)):
+            return True
+        return False
 
-        return list(hmap)[:visible]
+    def find_closest_x0(self, data: str) -> float:
+        """Нахождим приближенное значение на заданном интервале с помощью метода половинного деления"""
+        a, b = map(int, data.split())
 
+        if not self.intervalCheck(a, b):
+            raise Exception('На данном промежутке корней нет, либо их больше чем 1')
 
+        accuracy = 0.5
+        c = (a + b) / 2
 
-# def zero_method(a, b, visible) -> list[float]:
-#     ax = plt.gca()
-#     x = np.linspace(a, b, 200)
-#     ax.plot(x, f(x))
-#
-#     # Алгоритм нахождения приближенных значений
-#     y = [f(i) for i in x]
-#     x = [ceil(i) for i in x]
-#     compare = list(zip(x, y))
-#     nums = sorted(compare, key=lambda coord: abs(coord[1]))
-#     hmap = {}
-#     for x, y in nums:
-#         hmap[x] = hmap.get(x, 0) + 1
-#
-#     # Рисуем оси OX и OY
-#     plt.axhline(0, color="black", linewidth=0.5)
-#     plt.axvline(0, color="black", linewidth=0.5)
-#
-#     ax.set_title('График функции y(x)')
-#     ax.set_xlabel('x')
-#     ax.set_ylabel('y')
-#     ax.grid()
-#     plt.savefig("pics/y(x).png")
-#     # plt.show()
-#
-#     return list(hmap)[:visible]
+        while (b - a) / 2 > accuracy:
+            if f(a) * f(b) < 0:
+                b = c
+            else:
+                a = c
+
+            c = (a + b) / 2
+
+        return c
