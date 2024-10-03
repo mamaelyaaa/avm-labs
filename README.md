@@ -11,4 +11,8 @@ venv/Scripts/activate
 
 # Устанавливаем зависимости
 pip install -r requirements.txt
+
+# Запускаем скрипт (пример)
+cd Lab2
+python main.py
 ```

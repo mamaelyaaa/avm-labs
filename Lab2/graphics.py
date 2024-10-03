@@ -1,45 +1,40 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from Lab2.deriviate import f, df
-from Lab2.methods import newton_method, simple_iteration_method
+from typing import Optional
+
+from deriviate import f, df
+from methods import newton_method, simple_iteration_method
 
 
 class FunctionGraphic:
 
     def __init__(self, a: int, b: int):
-        self._x = np.linspace(a, b, 200)
-        self._ax = plt.gca()
-        self._y = f(self._x)
-
-        self._ax.plot(self._x, self._y)
-        self.create_grid()
+        self.__ax = plt.gca()
+        self.__x = np.linspace(a, b)
+        self.__y = f(self.__x)
         self.create_graphic()
 
-    # Методы для создания графика
-    def create_grid(self) -> None:
+    def create_graphic(self) -> None:
+        self.__ax.plot(self.__x, self.__y)
+
+        self.__ax.set_title('График функции y(x)')
+        self.__ax.set_xlabel('x')
+        self.__ax.set_ylabel('y')
+
         plt.axhline(0, color="black", linewidth=0.5)
         plt.axvline(0, color="black", linewidth=0.5)
-        self._ax.grid()
-        return
+        self.__ax.grid()
 
-    def create_graphic(self) -> str:
-        self._ax.set_title('График функции y(x)')
-        self._ax.set_xlabel('x')
-        self._ax.set_ylabel('y')
         plt.savefig("pics/y(x).png")
         plt.show()
-        return 'Создаем график функции'
+        return
 
-    # Методы нахождения приближенного значения
     @staticmethod
     def interval_check(a: int, b: int) -> bool:
         """Проверяем есть ли на интервале [a, b] корень уравнения"""
         accuracy = 0.1
-        if f(a) * f(b) < 0:
-            return True
-
-        if f(a) * f(b) > 0 and all(df(i, accuracy) > accuracy for i in range(a, b + 1)):
+        if f(a) * f(b) > 0 and all(df(i, accuracy) > accuracy for i in range(a, b + 1)) or f(a) * f(b) < 0:
             return True
         return False
 
@@ -81,14 +76,32 @@ class FunctionGraphic:
 
         return newton_iter, simple_iter
 
+
 class IterationDependencyGraphic:
+
     def __init__(self):
-        self._x = [range(5)]
-        self.fig, (self.ax1, self.ax2) = plt.subplots(1, 2)
+        self.__ax = plt.gca()
+        self.__x: list[int] = [i for i in range(-1, -6, -1)]
+        self.__y1: Optional[list[int]] = None
+        self.__y2: Optional[list[int]] = None
 
-    def create_graphic(self, y1, y2) -> None:
-        self.ax1.plot(self._x, y1)
-        self.ax2.plot(self._x, y2)
+    def set_iterations(self, newton_iter: list[int], simple_iter: list[int]) -> None:
+        self.__y1 = newton_iter
+        self.__y2 = simple_iter
+        return
 
+    def create_graphic(self, i) -> None:
+        self.__ax.plot(self.__x, self.__y1, label="Метод касательных")
+        self.__ax.plot(self.__x, self.__y2, label='МПИ', linestyle='--')
+        self.__ax.set_title(f'График зависимости количества итераций от точности для x{i}')
+        self.__ax.set_xlabel('Log(e)')
+        self.__ax.set_ylabel('Количество итераций')
+
+        plt.axhline(0, color="black", linewidth=0.5)
+        plt.axvline(0, color="black", linewidth=0.5)
+        self.__ax.grid()
+
+        plt.legend(loc='upper right')
+        plt.savefig(f'pics/iteration_x{i}.png')
         plt.show()
         return

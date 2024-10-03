@@ -1,4 +1,4 @@
-from Lab2.deriviate import f, df
+from deriviate import f, df
 from math import log10
 
 
