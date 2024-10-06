@@ -1,4 +1,4 @@
-from graphics import FunctionGraphic, IterationDependencyGraphic
+from graphic import FunctionGraphic, IterationDependencyGraphic
 from methods import newton_method, simple_iteration_method
 
 """
@@ -26,12 +26,19 @@ if __name__ == '__main__':
 
         for i in range(1, num_x0 + 1):
             # Пользователь получает приближенное значения для своего интервала
-            x0: float = graphic1.find_nearest_x0(input('Введите интервал: '))
-            print(f'Находим решение уравнения для приближения: {x0}', file=out_file)
+            try:
+                x0: float = graphic1.find_nearest_x0(input('Введите интервал: '))
+            except Exception as e:
+                print(f'Ошибка: {e}')
+                continue
+
+            print(f'Находим решение уравнения для приближения: [{x0}]\n', file=out_file)
             for accuracy in E:
+                newton_res, newton_iter = newton_method(x0, accuracy)
+                simple_res, simple_iter = simple_iteration_method(x0, accuracy)
                 print(f'Точность: {accuracy}\n'
-                      f'{newton_method(x0, accuracy)[0]}\n'
-                      f'{simple_iteration_method(x0, accuracy)[0]}\n', file=out_file)
+                      f'{newton_res}\n'
+                      f'{simple_res}\n', file=out_file)
             print('------------------------------------------------------------------------', file=out_file)
 
             print('Файл "output.txt" обновлен')

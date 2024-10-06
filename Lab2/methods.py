@@ -3,6 +3,9 @@ from math import log10
 
 
 def newton_method(x0: float, accuracy: float) -> tuple[str, int]:
+    if abs(df(x0, accuracy)) < accuracy:
+        raise Exception("Производная близка к нулю, метод не применим")
+
     x1 = x0 - f(x0) / df(x0, accuracy)
     iteration = 1
 
@@ -16,7 +19,7 @@ def newton_method(x0: float, accuracy: float) -> tuple[str, int]:
     return f'Метод Ньютона:          {x_calc} +- {accuracy}', iteration
 
 
-def simple_iteration_method(x0: float, accuracy: float, v: float = 0.7, gamma: float = 1) -> tuple[str, int]:
+def simple_iteration_method(x0: float, accuracy: float, gamma: float = 1, v: float = 0.7) -> tuple[str, int]:
     if v > 0.7 or v < 0.3:
         raise Exception('Неправильно указан коэффициент сходимости - [0.3; 0.7]')
     if gamma < 0:
