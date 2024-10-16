@@ -1,25 +1,35 @@
 class Matrix:
-
     def __init__(self, matrix: list[list[float]]):
-        self._matrix = matrix
-        self._n: int = len(self._matrix)
-        self._m: int = len(self._matrix[0])
+        self.__matrix = matrix
+        self.__n: int = len(self.__matrix)
+        self.__m: int = len(self.__matrix[0])
 
     def __str__(self) -> str:
-        return '\n'.join([' '.join(map(str, i)) for i in self._matrix])
+        return '\n'.join([' '.join(map(str, i)) for i in self.__matrix])
 
-    def submatrices(self, matrix: list[list[float]]) -> None:
+    @property
+    def get_matrix(self) -> list[list[float]]:
+        return self.__matrix
+
+    @property
+    def get_rows(self) -> int:
+        return self.__n
+
+    @property
+    def get_cols(self) -> int:
+        return self.__m
+
+    def submatrices(self) -> tuple:
         matrix_a: list[list[float]] = []
         matrix_b: list[float] = []
 
-        for i in range(self._n):
-            *matrix_a_i, matrix_b_i = matrix[i]
+        for i in range(self.__n):
+            *matrix_a_i, matrix_b_i = self.__matrix[i]
 
             matrix_a.append(matrix_a_i)
             matrix_b.append(matrix_b_i)
 
-        self._matrix_a = matrix_a
-        self._matrix_b = matrix_b
+        return matrix_a, matrix_b
 
     @staticmethod
     def minor(matrix, row, col) -> list[list[float]]:
@@ -39,3 +49,15 @@ class Matrix:
             sign = (-1) ** col
             det += sign * matrix[0][col] * self.determinant(self.minor(matrix, 0, col))
         return det
+
+    def rearrangement(self) -> None:
+        for row in range(self.__n):
+            max_col = row
+
+            for col in range(self.__m - 1):
+                if abs(self.__matrix[row][col]) > abs(self.__matrix[row][max_col]):
+                    max_col = col
+
+            if self.__matrix[row][max_col] > self.__matrix[max_col][max_col]:
+                self.__matrix[row], self.__matrix[max_col] = self.__matrix[max_col], self.__matrix[row]
+        return

@@ -1,70 +1,50 @@
+import numpy as np
+
 from Lab3.matrix import Matrix
 
-with open('matrix.txt', 'r', encoding='utf-8') as input_file:
-    A = [[float(i) for i in line.split()] for line in input_file.readlines()]
 
-
-def method_kramer(matrix_a: list[list[float]], matrix_b: list[float]) -> list[float]:
-    det = Matrix(matrix_a).determinant(matrix_a)
+def method_kramer(matrix: Matrix) -> list[float]:
+    matrix_a, matrix_b = matrix.submatrices()
+    det = matrix.determinant(matrix_a)
     x: list[float] = []
 
-    for col in range(len(matrix_a)):
-        mod_matrix: list[list[float]] = [matrix[:col] + [matrix_b[idx]] + matrix[col + 1:] for idx, matrix in
-                                         enumerate(matrix_a)]
-
+    for col in range(matrix.get_rows):
+        mod_matrix = [matrix[:col] + [matrix_b[idx]] + matrix[col + 1:] for idx, matrix in enumerate(matrix_a)]
         det_i = Matrix(mod_matrix).determinant(mod_matrix)
         x.append(round(det_i / det, 3))
-
     return x
 
 
-def method_simple_iteration(matrix_a: list[list[float]], matrix_b: list[float]) -> list[float]:
-    def mod_matrix(matrix: list[list[float]]) -> list[list[float]]:
-        n = len(matrix)
-        m = len(matrix[0])
-
-        for row in range(n):
-            max_col = row
-
-            for col in range(m - 1):
-                if abs(matrix[row][col]) > abs(matrix[row][max_col]):
-                    max_col = col
-
-            if matrix[row][max_col] > matrix[max_col][max_col]:
-                matrix[row], matrix[max_col] = matrix[max_col], matrix[row]
-
-        return matrix
-
-    new_matrix = mod_matrix(matrix_a)
+def method_simple_iteration(matrix: Matrix, accuracy: float, x0: list[float]) -> list[float]:
+    matrix.rearrangement()
+    matrix_a, matrix_b = matrix.submatrices()
 
     # Заполняем лямбду
     lam: list[float] = []
-    for i in range(len(new_matrix)):
-        sgn: int = 1 if new_matrix[i][i] >= 0 else -1
-        lam.append(round((-sgn * 0.7) / (1 + abs(new_matrix[i][i])), 3))
+    for i in range(matrix.get_rows):
+        sgn: int = 1 if matrix_a[i][i] >= 0 else -1
+        lam.append(round(-sgn / (1 + abs(matrix_a[i][i])), abs(int(np.log10(accuracy)))))
 
     # Заполняем массив C
-    matrix_c: list[list[float]] = new_matrix.copy()
+    matrix_c: list[list[float]] = matrix_a.copy()
 
-    for i in range(len(new_matrix)):
-        for j in range(len(new_matrix[0])):
+    for i in range(matrix.get_rows):
+        for j in range(matrix.get_cols - 1):
             if i == j:
-                matrix_c[i][j] = round(1 + lam[i] * new_matrix[i][j], 3)
+                matrix_c[i][j] = round(1 + lam[i] * matrix_a[i][j], abs(int(np.log10(accuracy))))
             else:
-                matrix_c[i][j] = round(lam[i] * new_matrix[i][j], 3)
+                matrix_c[i][j] = round(lam[i] * matrix_a[i][j], abs(int(np.log10(accuracy))))
 
-    # Заполняем массив d
-    matrix_d: list[float] = [round(-lam[i] * matrix_b[i], 3) for i in range(len(new_matrix))]
+    # # Заполняем массив d
+    matrix_d: list[float] = [round(-lam[i] * matrix_b[i], abs(int(np.log10(accuracy)))) for i in range(matrix.get_rows)]
 
-    for i in range(len(new_matrix)):
-        matrix_d.append(round(-lam[i] * matrix_b[i], 3))
+    x1 = np.round(np.matmul(x0, matrix_c) + matrix_d, abs(int(np.log10(accuracy))))
 
-    print(matrix_c)
-    print(matrix_d)
+    print(f'{x1 = }')
+    # max(abs(np.matmul(matrix_a, x0) - matrix_b)) >= accuracy
 
-    x: list[float] = []
-    # for i in range(len(new_matrix)):
-    #     x_i =
+    while max(abs(x1 - x0)) > accuracy:
+        x0 = x1
+        x1 = np.round(np.matmul(x0, matrix_c) + matrix_d, abs(int(np.log10(accuracy))))
 
-
-print(method_simple_iteration(matrix_A, matrix_B))
+    return x1
