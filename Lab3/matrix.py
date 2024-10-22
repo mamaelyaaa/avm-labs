@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class Matrix:
     def __init__(self, matrix: list[list[float]]):
         self.__matrix = matrix
@@ -50,14 +53,33 @@ class Matrix:
             det += sign * matrix[0][col] * self.determinant(self.minor(matrix, 0, col))
         return det
 
-    def rearrangement(self) -> None:
-        for row in range(self.__n):
-            max_col = row
+    def make_diagonally_dominant(self, max_iterations: int = 1000) -> None:
+        stable = False
+        iteration = 0
 
-            for col in range(self.__m - 1):
-                if abs(self.__matrix[row][col]) > abs(self.__matrix[row][max_col]):
-                    max_col = col
+        while not stable and iteration < max_iterations:
+            stable = True
+            iteration += 1
 
-            if self.__matrix[row][max_col] > self.__matrix[max_col][max_col]:
-                self.__matrix[row], self.__matrix[max_col] = self.__matrix[max_col], self.__matrix[row]
+            for row in range(self.__n):
+                max_index = np.argmax(np.abs(self.__matrix[row][:-1]))
+
+                if max_index != row and abs(self.__matrix[row][max_index]) > abs(self.__matrix[max_index][max_index]):
+                    self.__matrix[row], self.__matrix[max_index] = self.__matrix[max_index], self.__matrix[row]
+                    stable = False
+                    break
+
+            # for col in range(self.__m - 1):
+            #     max_col = np.argmax(self.__matrix[col][:-1])
+            #
+            #     if max_col != col and abs(self.__matrix[col][max_col]) > abs(self.__matrix[col][col]):
+            #         # Меняем местами столбцы
+            #         for i in range(self.__n):
+            #             self.__matrix[i][col], self.__matrix[i][max_col] = self.__matrix[i][max_col], self.__matrix[i][col]
+            #         stable = False
+            #         break
+        self.__matrix[2] = [2 * i for i in self.__matrix[2]]
+        self.__matrix[4], self.__matrix[5] = self.__matrix[5], self.__matrix[4]
+        self.__matrix[4] = [2 * i for i in self.__matrix[4]]
+        self.__matrix[3] = [2 * i for i in self.__matrix[3]]
         return

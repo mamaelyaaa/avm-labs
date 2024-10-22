@@ -1,6 +1,7 @@
 import numpy as np
 
 from Lab3.matrix import Matrix
+from math import log10
 
 
 def method_kramer(matrix: Matrix) -> list[float]:
@@ -16,14 +17,15 @@ def method_kramer(matrix: Matrix) -> list[float]:
 
 
 def method_simple_iteration(matrix: Matrix, accuracy: float, x0: list[float]) -> list[float]:
-    matrix.rearrangement()
+    matrix.make_diagonally_dominant()
+    print(matrix)
     matrix_a, matrix_b = matrix.submatrices()
 
     # Заполняем лямбду
     lam: list[float] = []
     for i in range(matrix.get_rows):
         sgn: int = 1 if matrix_a[i][i] >= 0 else -1
-        lam.append(round(-sgn / (1 + abs(matrix_a[i][i])), abs(int(np.log10(accuracy)))))
+        lam.append(-sgn / (1 + abs(matrix_a[i][i])))
 
     # Заполняем массив C
     matrix_c: list[list[float]] = matrix_a.copy()
@@ -31,20 +33,19 @@ def method_simple_iteration(matrix: Matrix, accuracy: float, x0: list[float]) ->
     for i in range(matrix.get_rows):
         for j in range(matrix.get_cols - 1):
             if i == j:
-                matrix_c[i][j] = round(1 + lam[i] * matrix_a[i][j], abs(int(np.log10(accuracy))))
+                matrix_c[i][j] = 1 + lam[i] * matrix_a[i][j]
             else:
-                matrix_c[i][j] = round(lam[i] * matrix_a[i][j], abs(int(np.log10(accuracy))))
+                matrix_c[i][j] = lam[i] * matrix_a[i][j]
 
     # # Заполняем массив d
-    matrix_d: list[float] = [round(-lam[i] * matrix_b[i], abs(int(np.log10(accuracy)))) for i in range(matrix.get_rows)]
+    matrix_d: list[float] = [-lam[i] * matrix_b[i] for i in range(matrix.get_rows)]
 
-    x1 = np.round(np.matmul(x0, matrix_c) + matrix_d, abs(int(np.log10(accuracy))))
+    x1 = np.matmul(matrix_c, x0) + matrix_d
+    eigenvalues, _ = np.linalg.eig(matrix_c)
+    spectral_radius = max(abs(eigenvalues))
 
-    print(f'{x1 = }')
-    # max(abs(np.matmul(matrix_a, x0) - matrix_b)) >= accuracy
-
-    while max(abs(x1 - x0)) > accuracy:
+    while max(abs(x1 - x0)) > accuracy and max(abs(np.matmul(matrix_a, x0) - matrix_b)) >= accuracy:
         x0 = x1
-        x1 = np.round(np.matmul(x0, matrix_c) + matrix_d, abs(int(np.log10(accuracy))))
+        x1 = np.matmul(matrix_c, x0) + matrix_d
 
-    return x1
+    return np.round(x1, abs(int(log10(accuracy))))
