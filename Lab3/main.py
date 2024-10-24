@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     # Находим промежуточные значения
     _, _, intermediate_vec = method_simple_iteration(matrix, x0, 0.1)
-    graphic2 = ChangingGraphic(0, 50)
+    graphic2 = ChangingGraphic(len(intermediate_vec))
     for i in range(7):
         graphic2.set_func(intermediate_vec, i)
 

@@ -44,19 +44,19 @@ class DependencyDiagram(BaseGraphic):
 
 class ChangingGraphic(BaseGraphic):
 
-    def __init__(self, a: int, b: int):
+    def __init__(self, iterations):
+        self.iterations = iterations
         self._fig, self._ax = plt.subplots(figsize=(10, 5))
-        self.__x: list[int] = [k for k in range(a, b + 1)]
-        self.a = a
-        self.b = b
+        self.__x: list[int] = [k for k in range(iterations)]
         self.y_values = [[] for _ in range(7)]
 
     def set_func(self, intermediate_data: list[list], i: int):
-        self.y_values[i] = [row[i] for row in intermediate_data[:self.b + 1]]
+        self.y_values[i] = [row[i] for row in intermediate_data]
 
     def create_graphic(self) -> None:
         colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k']  # Задаем разные цвета для графиков
         labels = [f'x{i + 1}' for i in range(7)]
+        plt.ylim(-20, 20)
 
         for i in range(7):
             if self.y_values[i]:

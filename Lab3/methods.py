@@ -1,3 +1,6 @@
+import math
+from math import ceil
+
 import numpy as np
 
 
@@ -29,36 +32,19 @@ def method_simple_iteration(matrix: np.ndarray, x0: np.array, accuracy: float) -
 
     matrix_a, vector_b = submatrices(matrix)
 
-    matrix_a[[4, 5]] = matrix_a[[5, 4]]
-
-    matrix_D = np.array([[15 if i == j else 1 for j in range(7)] for i in range(7)])
-    matrix_b = np.linalg.inv(matrix_a) @ matrix_D
-    matrix_d = matrix_b * vector_b
+    # Преобразование в диагонально преобладающую
+    matrix_D = np.array([[5 if i == j else 1 for j in range(7)] for i in range(7)])
+    matrix_B = matrix_D @ np.linalg.inv(matrix_a)
+    matrix_d = matrix_B @ vector_b
 
     matrix_a, vector_b = matrix_D, matrix_d
 
-    # Диагонально преобладающая матрица
-    stable = False
-    while not stable:
-        stable = True
-
-        for row in range(n):
-            max_index = np.argmax(np.abs(matrix[row, :-1]))
-
-            if max_index != row and abs(matrix[row, max_index]) > abs(matrix[max_index, max_index]):
-                matrix[[row, max_index], :] = matrix[[max_index, row], :]
-                stable = False
-                break
-
-
     # Заполняем лямбду
     vector_lambda = np.array([-1 * (np.sign(matrix_ii) / (1 + abs(matrix_ii))) for matrix_ii in matrix_a.diagonal()])
-    print(vector_lambda)
+
     matrix_c = np.array([[1 + vector_lambda[i] * matrix_a[i, j] if i == j else vector_lambda[i] * matrix_a[i, j]
                           for j in range(m - 1)]
                           for i in range(n)])
-
-    print(max(abs(np.linalg.eig(matrix_c)[0])))
 
     if max(abs(np.linalg.eig(matrix_c)[0])) > 1:
         raise Exception("Достаточное условие не сходится")
@@ -75,4 +61,4 @@ def method_simple_iteration(matrix: np.ndarray, x0: np.array, accuracy: float) -
         iteration += 1
         intermediate_cache.append(x1)
 
-    return np.round(x1, int(abs(np.log10(accuracy)))), iteration, intermediate_cache
+    return np.round(x1, ceil(np.abs(np.log10(accuracy)))), iteration, intermediate_cache
