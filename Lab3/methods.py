@@ -1,51 +1,67 @@
 import numpy as np
 
-from Lab3.matrix import Matrix
-from math import log10
+
+def submatrices(matrix: np.ndarray) -> tuple:
+    matrix_a = matrix[:, :-1]
+    vector_b = matrix[:, -1]
+    return matrix_a, vector_b
 
 
-def method_kramer(matrix: Matrix) -> list[float]:
-    matrix_a, matrix_b = matrix.submatrices()
-    det = matrix.determinant(matrix_a)
+def method_kramer(matrix: np.ndarray) -> np.ndarray:
+    matrix_a, vector_b = submatrices(matrix)
+    det = np.linalg.det(matrix_a)
+
     x: list[float] = []
 
-    for col in range(matrix.get_rows):
-        mod_matrix = [matrix[:col] + [matrix_b[idx]] + matrix[col + 1:] for idx, matrix in enumerate(matrix_a)]
-        det_i = Matrix(mod_matrix).determinant(mod_matrix)
-        x.append(round(det_i / det, 3))
-    return x
+    for col in range(len(matrix)):
+        mod_matrix = matrix_a.copy()
+        mod_matrix[:, col] = vector_b
+
+        det_i = np.linalg.det(mod_matrix)
+
+        x.append(float(round(det_i / det, 3)))
+
+    return np.array(x)
 
 
-def method_simple_iteration(matrix: Matrix, accuracy: float, x0: list[float]) -> list[float]:
-    matrix.make_diagonally_dominant()
-    print(matrix)
-    matrix_a, matrix_b = matrix.submatrices()
+def method_simple_iteration(matrix: np.ndarray, x0: np.array, accuracy: float) -> tuple[np.array, int, list]:
+    n, m = np.shape(matrix)
+
+    # Диагонально преобладающая матрица
+    stable = False
+    while not stable:
+        stable = True
+
+        for row in range(n):
+            max_index = np.argmax(np.abs(matrix[row, :-1]))
+
+            if max_index != row and abs(matrix[row, max_index]) > abs(matrix[max_index, max_index]):
+                matrix[[row, max_index], :] = matrix[[max_index, row], :]
+                stable = False
+                break
+
+    matrix_a, vector_b = submatrices(matrix)
 
     # Заполняем лямбду
-    lam: list[float] = []
-    for i in range(matrix.get_rows):
-        sgn: int = 1 if matrix_a[i][i] >= 0 else -1
-        lam.append(-sgn / (1 + abs(matrix_a[i][i])))
+    vector_lambda = np.array([-1 * (np.sign(matrix_ii) / (1 + abs(matrix_ii))) for matrix_ii in matrix_a.diagonal()])
 
-    # Заполняем массив C
-    matrix_c: list[list[float]] = matrix_a.copy()
+    matrix_c = np.array([[1 + vector_lambda[i] * matrix_a[i, j] if i == j else vector_lambda[i] * matrix_a[i, j]
+                          for j in range(m - 1)]
+                          for i in range(n)])
 
-    for i in range(matrix.get_rows):
-        for j in range(matrix.get_cols - 1):
-            if i == j:
-                matrix_c[i][j] = 1 + lam[i] * matrix_a[i][j]
-            else:
-                matrix_c[i][j] = lam[i] * matrix_a[i][j]
+    if max(abs(np.linalg.eig(matrix_c)[0])) > 1:
+        raise Exception("Достаточное условие не сходится")
 
-    # # Заполняем массив d
-    matrix_d: list[float] = [-lam[i] * matrix_b[i] for i in range(matrix.get_rows)]
+    vector_d = np.array([-1 * vector_lambda[i] * vector_b[i] for i in range(n)])
 
-    x1 = np.matmul(matrix_c, x0) + matrix_d
-    eigenvalues, _ = np.linalg.eig(matrix_c)
-    spectral_radius = max(abs(eigenvalues))
+    x1 = (matrix_c @ x0) + vector_d
+    iteration = 1
+    intermediate_cache: list = [x1]
 
-    while max(abs(x1 - x0)) > accuracy and max(abs(np.matmul(matrix_a, x0) - matrix_b)) >= accuracy:
+    while np.max(abs(x1 - x0)) > accuracy and np.max(abs(vector_b - (matrix_a @ x1))) >= accuracy:
         x0 = x1
-        x1 = np.matmul(matrix_c, x0) + matrix_d
+        x1 = (matrix_c @ x0) + vector_d
+        iteration += 1
+        intermediate_cache.append(x1)
 
-    return np.round(x1, abs(int(log10(accuracy))))
+    return np.round(x1, int(abs(np.log10(accuracy)))), iteration, intermediate_cache
