@@ -1,4 +1,3 @@
-import math
 from math import ceil
 
 import numpy as np
@@ -27,13 +26,13 @@ def method_kramer(matrix: np.ndarray) -> np.ndarray:
     return np.array(x)
 
 
-def method_simple_iteration(matrix: np.ndarray, x0: np.array, accuracy: float) -> tuple[np.array, int, list]:
+def method_simple_iteration(matrix: np.array, x0: np.array, accuracy: float) -> tuple[np.array, int, list]:
     n, m = np.shape(matrix)
 
     matrix_a, vector_b = submatrices(matrix)
 
     # Преобразование в диагонально преобладающую
-    matrix_D = np.array([[5 if i == j else 1 for j in range(7)] for i in range(7)])
+    matrix_D = np.array([[5 if i == j else 1 for j in range(6)] for i in range(6)])
     matrix_B = matrix_D @ np.linalg.inv(matrix_a)
     matrix_d = matrix_B @ vector_b
 
@@ -44,7 +43,7 @@ def method_simple_iteration(matrix: np.ndarray, x0: np.array, accuracy: float) -
 
     matrix_c = np.array([[1 + vector_lambda[i] * matrix_a[i, j] if i == j else vector_lambda[i] * matrix_a[i, j]
                           for j in range(m - 1)]
-                          for i in range(n)])
+                         for i in range(n)])
 
     if max(abs(np.linalg.eig(matrix_c)[0])) > 1:
         raise Exception("Достаточное условие не сходится")
@@ -56,6 +55,11 @@ def method_simple_iteration(matrix: np.ndarray, x0: np.array, accuracy: float) -
     intermediate_cache: list = [x1]
 
     while np.max(abs(x1 - x0)) > accuracy and np.max(abs(vector_b - (matrix_a @ x1))) >= accuracy:
+        prev_diff = np.max(abs(x1 - x0))
+
+        if np.max(abs(x1 - x0)) < prev_diff:
+            break
+
         x0 = x1
         x1 = (matrix_c @ x0) + vector_d
         iteration += 1

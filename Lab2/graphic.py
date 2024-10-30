@@ -3,8 +3,8 @@ from typing import Optional
 import matplotlib.pyplot as plt
 import numpy as np
 
-from Lab2.deriviate import f
-from Lab2.methods import newton_method, simple_iteration_method
+# from Lab2.deriviate import f
+# from Lab2.methods import newton_method, simple_iteration_method
 
 
 class BaseGraphic:

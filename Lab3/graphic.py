@@ -1,5 +1,7 @@
 from matplotlib import pyplot as plt
 
+from Lab2.graphic import BaseGraphic
+
 
 class BaseGraphic:
     def __init__(self):
@@ -48,17 +50,17 @@ class ChangingGraphic(BaseGraphic):
         self.iterations = iterations
         self._fig, self._ax = plt.subplots(figsize=(10, 5))
         self.__x: list[int] = [k for k in range(iterations)]
-        self.y_values = [[] for _ in range(7)]
+        self.y_values = [[] for _ in range(6)]
 
     def set_func(self, intermediate_data: list[list], i: int):
         self.y_values[i] = [row[i] for row in intermediate_data]
 
     def create_graphic(self) -> None:
         colors = ['r', 'g', 'b', 'c', 'm', 'y', 'k']  # Задаем разные цвета для графиков
-        labels = [f'x{i + 1}' for i in range(7)]
+        labels = [f'x{i + 1}' for i in range(6)]
         plt.ylim(-20, 20)
 
-        for i in range(7):
+        for i in range(6):
             if self.y_values[i]:
                 self._ax.plot(self.__x, self.y_values[i], label=labels[i], color=colors[i], marker='o', markersize=3)
 
