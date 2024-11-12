@@ -21,15 +21,36 @@ void readFile(double x[N], double y_exp[N]) {
     fclose(file);
 }
 
-int main() {
-    double x[N], y_exp[N];
+void readLagrange(double y_calc[N]) {
+    FILE *file = fopen("src/lagrange_y_calc.txt", "r");
+
+    if (!file) {
+        printf("File Error");
+        exit(1);
+    }
+    
+    for (int i = 0; i < N; i++){
+        fscanf(file, "%lf\n", &y_calc[i]);
+    }
+    fclose(file);
+}
+
+int main(void) {
+    double x[N]; 
+    double y_exp[N];
+    double y_calc[N];
+
     readFile(x, y_exp);
 
     experimentalDotsGraphic();
     printf("Experimental point graph created...\n");
 
-    printf("Optimal polynomial degree: %d\n", findOptimalPolynomialDegree(x, y_exp));
+    printf("Optimal polynomial degree: %d\n", lagrangeOptimalPolynomialDegree(x, y_exp));
 
-    printf("%lf", chooseLagrangeDots(x, y_exp, 1, 6, 11));
+    readLagrange(y_calc);
+    chooseLagrangeDots(x, y_exp, 1, 6, 11);
+    printf("Finding the obtained values for Lagrange method...\n");
+
+    lagrangeGraphic(x, y_exp, y_calc);
     return 0;
 }
