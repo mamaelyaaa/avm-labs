@@ -22,9 +22,9 @@ double lagrangeFunc(double x, double dots[LAGRANGE_DOTS][2]) {
     }
     return res;
 }
-    
-void chooseLagrangeDots(double x[N], double y_exp[N], int x1, int x2, int x3) {
-    FILE *output = fopen("src/lagrange_y_calc.txt", "w");
+
+void lagrangeMethod(double x[N], double y_exp[N], int x1, int x2, int x3) {
+    FILE *output = fopen("lagrange/lagrange_y_calc.txt", "w");
 
     double dots[LAGRANGE_DOTS][2] = {0};
 
@@ -46,3 +46,32 @@ void chooseLagrangeDots(double x[N], double y_exp[N], int x1, int x2, int x3) {
         fprintf(output, "%.3lf\n", y_calc[i]);
     }
 }
+
+double newtonFunc(double x) {
+    return 0;
+}
+
+// void chooseNewtonDots(double x[N], double y_exp[N], int x1, int x2, int x3, int x4) {
+//     FILE *output = fopen("src/lagrange/lagrange_y_calc.txt", "w");
+
+//     double dots[LAGRANGE_DOTS][2] = {0};
+
+//     int i = 0, idx = 0;
+
+//     while (i <= N) {
+//         if ((i + 1 == x1) || (i + 1 == x2) || (i + 1 == x3) || (i + 1 == x4)) {
+//             dots[idx][0] = x[i];
+//             dots[idx][1] = y_exp[i];
+//             idx++;
+//         }
+//         i++;
+//     }
+
+//     double y_calc[N];
+
+
+//     for (int i = 0; i < N; i++) {
+//         y_calc[i] = newtonFunc(x[i], dots);
+//         fprintf(output, "%.3lf\n", y_calc[i]);
+//     }
+// }
