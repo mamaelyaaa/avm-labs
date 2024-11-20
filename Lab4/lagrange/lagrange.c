@@ -14,7 +14,7 @@ void lagrangeDiagonalDiff(double x[N], double y_exp[N]) {
 
     for (int i = 0; i < N - 1; i++) {
         
-        double diff = y_exp[i] - y_exp[i + 1];
+        double diff = y_exp[i + 1] - y_exp[i];
 
         if (i == 0) {
             maxValue = diff;
@@ -33,7 +33,7 @@ void lagrangeDiagonalDiff(double x[N], double y_exp[N]) {
         double maxValue, minValue;
 
         for (int j = 0; j < N - i - 1; j++) {
-            double diff = delta_y[j] - delta_y[j + 1];
+            double diff = delta_y[j + 1] - delta_y[j];
             diagonalTable[j][i] = diff;
 
             if (j == 0) {

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "graphics/graphic.h"
+#include "error.h"
 #include "lagrange/lagrange.h"
 #include "newton/newton.h"
 
@@ -59,5 +60,8 @@ int main(void) {
 
     newtonGraphic(x, y_exp, Ly_calc);
     printf("Newton graphic created...\n");
+
+    findErrors(y_exp, Ly_calc, Ny_calc);
+    printf("Calculating errors...\n");
     return 0;
 }
