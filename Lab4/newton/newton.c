@@ -76,12 +76,11 @@ void newtonDiagonalDiff(double x[N], double Nx[NEWTON_DOTS], double Ny_exp[NEWTO
         for (int j = 0; j < NEWTON_DOTS - i - 1; j++) {
             double diff = (delta_y[j + 1] - delta_y[j]) / (Nx[i + j + 1] - Nx[j]);
             diagonalTable[j][i] = diff;
+            delta_y[j] = diff;
 
             if (j == 0) {
                 delta_y0[i] = diff;
             }
-
-            delta_y[j] = diff;
         }
     }
 
