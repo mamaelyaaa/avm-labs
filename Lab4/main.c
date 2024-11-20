@@ -1,36 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "graphics/graphic.h"
-#include "diagonaldiffs.h"
-#include "methods.h"
+#include "lagrange/lagrange.h"
+#include "newton/newton.h"
 
 #define N 12
+#define LAGRANGE_DOTS 3
+#define NEWTON_DOTS 4
 
-void readFile(double x[N], double y_exp[N]) {
-    FILE *file = fopen("cords.txt", "r");
+void readFile(double x[N], double y[N], char filepath[]) {
+    FILE *file = fopen(filepath, "r");
 
     if (!file) {
-        printf("File Error: Cannot find cords.txt");
+        printf("File Error: Cannot find %s", filepath);
         exit(1);
     }
 
     for (int i = 0; i < N; i++){
-        fscanf(file, "%lf %lf\n", &x[i], &y_exp[i]);
-    }
-
-    fclose(file);
-}
-
-void readLagrange(double y_calc[N]) {
-    FILE *file = fopen("lagrange/lagrange_y_calc.txt", "r");
-
-    if (!file) {
-        printf("File Error: Cannot find lagrange_y_calc.txt");
-        exit(1);
-    }
-    
-    for (int i = 0; i < N; i++){
-        fscanf(file, "%lf\n", &y_calc[i]);
+        fscanf(file, "%lf %lf\n", &x[i], &y[i]);
+        // printf("%lf %lf\n", x[i], y[i]);
     }
     fclose(file);
 }
@@ -38,22 +26,38 @@ void readLagrange(double y_calc[N]) {
 int main(void) {
     double x[N]; 
     double y_exp[N];
-    double y_calc[N];
 
-    readFile(x, y_exp);
+    double y_calc_Newton[N];
+
+    readFile(x, y_exp, "cords.txt");
 
     experimentalDotsGraphic();
     printf("Experimental point graph created...\n");
 
-    printf("Optimal polynomial degree for Lagrange: %d\n", lagrangeDiagonalDiff(x, y_exp));
+    lagrangeDiagonalDiff(x, y_exp);
+    printf("Create Diagonal Difference table for Lagrange...\n");
 
-    readLagrange(y_calc);
-    lagrangeMethod(x, y_exp, 1, 6, 11);
-    printf("Finding the obtained values for Lagrange method...\n");
+    double Lx[LAGRANGE_DOTS], Ly_exp[LAGRANGE_DOTS];
+    readLagrangeDots(Lx, Ly_exp);
+    chooseLagrangeDots(x, y_exp, 1, 6, 11);
+    printf("Choosing Lagrange dots...\n");
 
-    lagrangeGraphic(x, y_exp, y_calc);
+    double Ly_calc[N];
+    readFile(x, Ly_calc, "lagrange/lagrange_calc.txt");
+    lagrangeMethod(x, Lx, Ly_exp);
+    lagrangeGraphic(x, y_exp, Ly_calc);
     printf("Lagrange graphic created...\n");
 
-    // printf("%d\n", newtonOptimalPolynomialDegree(x, y_exp));
+    double Nx[NEWTON_DOTS], Ny_exp[NEWTON_DOTS];
+    readNewtonDots(Nx, Ny_exp);
+    chooseNewtonDots(x, y_exp, 1, 4, 6, 11);
+    printf("Choosing Newton dots...\n");
+
+    double Ny_calc[N];
+    readFile(x, Ny_calc, "newton/newton_calc.txt");
+    newtonDiagonalDiff(x, Nx, Ny_exp);
+
+    newtonGraphic(x, y_exp, Ly_calc);
+    printf("Newton graphic created...\n");
     return 0;
 }
