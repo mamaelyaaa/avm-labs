@@ -1,18 +1,22 @@
-import useDataLoader from './hooks/useDataLoader';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import HomePage from './components/Home';
+import ChartPage from './components/ChartPage';
 
 const App = () => {
-  const { data } = useDataLoader('src/assets/data.json');
-  const { coefficients, init, step } = data;
-
-  const { a0, a1, a2, a3, a4} = coefficients;
-  const { x0, y0 } = init;
-
+  // const results = useSolver('ME');
   
+  // return (
+    // <ChartComponent results={results}></ChartComponent>
+  // )
+
   return (
-    <div>
-      <p>{JSON.stringify(data, null, 2)}</p>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/charts" element={<ChartPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 };
 
 export default App;
