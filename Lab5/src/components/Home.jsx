@@ -4,7 +4,7 @@ const HomePage = () => {
   const { data } = useDataLoader("src/data.json");
 
   return (
-    <div className='flex justify-center items-center h-screen w-screen'>
+    <div>
       <p>{JSON.stringify(data, null, 2)}</p>
     </div>
   );
