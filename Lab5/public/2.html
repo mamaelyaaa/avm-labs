@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.10.0/math.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
     <link rel="stylesheet" href="style.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
@@ -27,13 +28,32 @@
       <div class="chart-container mx-auto" style="width: 700px; height: 400px">
         <canvas id="chart"></canvas>
       </div>
-      
-      <div class="flex justify-end">
-        <span class="flex justify-center">
-          <a class="block bg-blue-400 px-4 py-1 text-white rounded-lg m-2" href="/public/2.html">Дальше</a>
+
+      <div class="flex justify-between">
+        <span>
+          <a
+            class="block bg-blue-400 px-4 py-1 text-white rounded-lg m-2"
+            href="/public/index.html"
+            >Назад</a
+          >
+        </span>
+        <span>
+          <button
+            class="block bg-gray-400 px-4 py-1 text-white rounded-lg m-2"
+            id="changeScale"
+          >
+            Приблизить
+          </button>
+        </span>
+        <span>
+          <a
+            class="block bg-blue-400 px-4 py-1 text-white rounded-lg m-2"
+            href="/public/3.html"
+            >Дальше</a
+          >
         </span>
       </div>
     </div>
-    <script type="module" src="/src/scripts/script1.js"></script>
+    <script type="module" src="/src/scripts/script2.js"></script>
   </body>
 </html>

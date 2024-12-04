@@ -22,18 +22,31 @@
   <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <div class="bg-white shadow-lg rounded-3xl p-4">
       <h1 class="text-2xl text-slate-900 font-bold text-center mb-4">
-        График зависимости y=y(x)
+        Зависимость абсолютной ошибки от метода
       </h1>
-      <div class="chart-container mx-auto" style="width: 700px; height: 400px">
-        <canvas id="chart"></canvas>
+      <div
+        class="chart-container mx-auto my-auto"
+        style="width: 700px; height: 400px"
+      >
+        <canvas id="errorChart"></canvas>
       </div>
-      
-      <div class="flex justify-end">
-        <span class="flex justify-center">
-          <a class="block bg-blue-400 px-4 py-1 text-white rounded-lg m-2" href="/public/2.html">Дальше</a>
+      <div class="flex justify-between">
+        <span>
+          <a
+            class="block bg-blue-400 px-4 py-1 text-white rounded-lg m-2"
+            href="/public/2.html"
+            >Назад</a
+          >
+        </span>
+        <span>
+          <a
+            class="block bg-blue-400 px-4 py-1 text-white rounded-lg m-2"
+            href="/public/4.html"
+            >Дальше</a
+          >
         </span>
       </div>
     </div>
-    <script type="module" src="/src/scripts/script1.js"></script>
+    <script type="module" src="/src/scripts/script3.js"></script>
   </body>
 </html>
